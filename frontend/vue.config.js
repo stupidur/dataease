@@ -70,6 +70,15 @@ module.exports = {
       .options({
         symbolId: 'icon-[name]'
       })
+
+    config.module
+      .rule('swf')
+      .test(/\.swf$/)
+      .use('url-loader')
+      .loader('url-loader')
+      .options({
+        limit: 1000
+      })
     if (process.env.NODE_ENV === 'production') {
       /* config.plugin('compressionPlugin').use(new CompressionPlugin({
         test: /\.(js|css|less)$/, // 匹配文件名

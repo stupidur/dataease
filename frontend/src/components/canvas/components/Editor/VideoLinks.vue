@@ -7,13 +7,13 @@
   >
     <el-row>
       <el-form ref="form" size="mini" label-width="70px">
-        <!--        <el-form-item :label="$t('panel.video_type')">-->
-        <!--          <el-radio-group v-model="linkInfoTemp.videoType">-->
-        <!--            <el-radio :label="'web'">{{$t('panel.online_video')}}</el-radio>-->
-        <!--&lt;!&ndash;            <el-radio :label="'hls'">HLS 直播</el-radio>&ndash;&gt;-->
-        <!--            <el-radio :label="'rtmp'">{{$t('panel.streaming_media')}}</el-radio>-->
-        <!--          </el-radio-group>-->
-        <!--        </el-form-item>-->
+                <el-form-item :label="$t('panel.video_type')">
+                  <el-radio-group v-model="linkInfoTemp.videoType">
+                    <el-radio :label="'web'">{{$t('panel.online_video')}}</el-radio>
+        <!--            <el-radio :label="'hls'">HLS 直播</el-radio>-->
+                    <el-radio :label="'rtmp'">{{$t('panel.streaming_media')}}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
         <el-form-item :label="$t('panel.auto_play')">
           <el-switch v-model="linkInfoTemp[linkInfoTemp.videoType].autoplay" size="mini" />
           <span style="color: #909399; font-size: 8px;margin-left: 3px">

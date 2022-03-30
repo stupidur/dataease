@@ -77,12 +77,7 @@ export const VIDEOLINKS = {
     height: 300,
     techOrder: ['flash'],
     autoplay: false,
-    controls: true,
-    flash: {
-      hls: {
-        withCredentials: false
-      }
-    }
+    controls: true
   }
 
 }

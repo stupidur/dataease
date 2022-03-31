@@ -22,6 +22,7 @@ export default {
   data() {
     return {
       playerOptions: {
+        height: 500,
         autoplay: true,
         sources: [{
           type: 'rtmp/mp4',

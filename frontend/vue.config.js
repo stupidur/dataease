@@ -19,7 +19,7 @@ module.exports = {
     port: port,
     proxy: {
       '^(?!/login)': {
-        target: 'http://localhost:8081/',
+        target: 'http://192.168.31.150:8081/',
         ws: false
       }
     },
@@ -42,6 +42,7 @@ module.exports = {
     name: name,
     devtool: 'source-map',
     resolve: {
+      modules: [path.resolve('node_modules'), 'node_modules'],
       alias: {
         '@': resolve('src')
       }

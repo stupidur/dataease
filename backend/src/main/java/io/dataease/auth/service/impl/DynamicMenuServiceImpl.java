@@ -35,7 +35,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
 
     @Override
     public List<DynamicMenuDto> load(String userId) {
-        List<SysMenu> sysMenus = extSysMenuMapper.querySysMenu();
+        List<SysMenu> sysMenus = extSysMenuMapper.querySysMenu(userId);
         List<DynamicMenuDto> dynamicMenuDtos = sysMenus.stream().map(this::convert).collect(Collectors.toList());
         //增加插件中的菜单
         List<PluginSysMenu> pluginSysMenus = PluginUtils.pluginMenus();

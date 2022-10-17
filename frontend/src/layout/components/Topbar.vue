@@ -60,9 +60,9 @@
             <el-dropdown-item>{{ $t('user.change_password') }}</el-dropdown-item>
           </router-link>
 
-          <router-link to="/about/index">
-            <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
-          </router-link>
+<!--          <router-link to="/about/index">-->
+<!--            <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>-->
+<!--          </router-link>-->
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">{{ $t('commons.exit_system') }}</span>
           </el-dropdown-item>

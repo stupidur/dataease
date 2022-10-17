@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,11 +53,12 @@ public class AuthServer implements AuthApi {
 
     @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
+
+        Integer loginType = loginDto.getLoginType();
         String username = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getUsername());
-        String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getPassword());
+        String pwd = loginType != 3 ? RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getPassword()):loginDto.getPassword();
 
         // 增加ldap登录方式
-        Integer loginType = loginDto.getLoginType();
         boolean isSupportLdap = authUserService.supportLdap();
         if (loginType == 1 && isSupportLdap) {
             LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
@@ -96,17 +98,37 @@ public class AuthServer implements AuthApi {
         }
 
         // 验证登录类型是否与用户类型相同
-        if (!sysUserService.validateLoginType(user.getFrom(), loginType)) {
-            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
-        }
+//        if (!sysUserService.validateLoginType(user.getFrom(), loginType)) {
+//            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+//        }
 
         if (user.getEnabled() == 0) {
             DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
         String realPwd = user.getPassword();
+        // 签名登录
+        if (loginType == 3 && !isSupportLdap) {
+            String[] params = pwd.split("@");
+            String signature = params[0];
+            String timestamp = params[1];
+            String nonce = params[2];
+            String key = "zrwy";
+            try {
+                // 验证加密相等以及时间不超时 30s
+                Long currentTime = System.currentTimeMillis();
+                System.out.println(signature.equals(shaEncode(timestamp + nonce + key)));
+                if(signature.equals(shaEncode(timestamp+nonce+key)) && (currentTime - 30000) <= Long.parseLong(timestamp)){
 
+                }else{
+                    DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+                }
+            } catch (Exception e) {
+                DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+                return false;
+            }
+        }
         // 普通登录需要验证密码
-        if (loginType == 0 || !isSupportLdap) {
+        if (loginType == 0 && !isSupportLdap) {
             // 私钥解密
 
             // md5加密
@@ -125,6 +147,30 @@ public class AuthServer implements AuthApi {
         ServletUtils.setToken(token);
         authUserService.clearCache(user.getUserId());
         return result;
+    }
+
+
+
+    public static String shaEncode(String inStr) throws Exception {
+        MessageDigest sha = null;
+        try {
+            sha = MessageDigest.getInstance("SHA");
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            e.printStackTrace();
+            return "";
+        }
+        byte[] byteArray = inStr.getBytes("UTF-8");
+        byte[] md5Bytes = sha.digest(byteArray);
+        StringBuffer hexValue = new StringBuffer();
+        for (int i = 0; i < md5Bytes.length; i++) {
+            int val = ((int) md5Bytes[i]) & 0xff;
+            if (val < 16) {
+                hexValue.append("0");
+            }
+            hexValue.append(Integer.toHexString(val));
+        }
+        return hexValue.toString();
     }
 
     @Override

@@ -28,6 +28,9 @@
         sys_menu
         WHERE
         type &lt;= 1
+        <if test="userId != null">
+        AND sys_menu.menu_id in (select menu_id from sys_roles_menus where sys_roles_menus.role_id in (select role_id from sys_users_roles where user_id = #{userId}))
+        </if>
         AND (
         sys_menu.menu_id != 100
         OR EXISTS (
